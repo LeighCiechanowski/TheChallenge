@@ -4,7 +4,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.lang3.StringUtils;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WordCountService 
 {
@@ -24,8 +25,13 @@ public class WordCountService
         
         uniqueWords.forEach((word) -> 
         {
-            int count = StringUtils.countMatches(data, word);
-            counts.put(word, count);
+            Matcher m = Pattern.compile("\\b" + word + "\\b").matcher(data);
+
+            int matches = 0;
+            while(m.find())
+                matches++;
+
+            counts.put(word, matches);
         });
         
         return counts;
