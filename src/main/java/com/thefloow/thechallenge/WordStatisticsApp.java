@@ -1,19 +1,19 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.thefloow.thechallenge;
 
-/**
- *
- * @author lciechanowski
- */
-public class WordStatisticsApp {
-   
+import com.thefloow.thechallenge.services.*;
+import java.util.Map;
+
+
+
+public class WordStatisticsApp 
+{
+    
     public static void main( String[] args )
     {
+         String[] myStringArray = new String[]{"-source","test.text","-mongo", "localhost:27017"};
          System.out.println("And so it begins");
+         ParameterService parameterService = new ParameterService();
+         Map<String, String> parameters = parameterService.buildParameters(myStringArray);
     }
-    
+   
 }
