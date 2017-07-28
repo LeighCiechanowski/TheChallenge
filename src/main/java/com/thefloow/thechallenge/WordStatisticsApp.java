@@ -2,6 +2,7 @@ package com.thefloow.thechallenge;
 
 import com.thefloow.thechallenge.services.*;
 import java.util.Map;
+import java.util.Set;
 
 public class WordStatisticsApp 
 {
@@ -12,7 +13,7 @@ public class WordStatisticsApp
     public static void main( String[] args )
     {
         // TODO remove hardcoded args
-        args = new String[]{"-source","pom.xml","-mongo", "localhost:27017"};
+        args = new String[]{"-source","testdata.txt","-mongo", "localhost:27017"};
         
         System.out.println("And so it begins");
         ParameterService parameterService = new ParameterService();
@@ -20,6 +21,9 @@ public class WordStatisticsApp
         
         FileReaderService fileReader = new FileReaderService();
         String data = fileReader.readFile(parameters.get(WordStatisticsApp.SOURCE_KEY));
+        
+        WordCountService countService = new WordCountService();
+        Set<String> uniqueWords = countService.GetUniqueWords(data);
     }
    
 }
