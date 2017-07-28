@@ -1,6 +1,7 @@
 package com.thefloow.thechallenge;
 
 import com.thefloow.thechallenge.services.*;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -23,7 +24,7 @@ public class WordStatisticsApp
         String data = fileReader.readFile(parameters.get(WordStatisticsApp.SOURCE_KEY));
         
         WordCountService countService = new WordCountService();
-        Set<String> uniqueWords = countService.GetUniqueWords(data);
+        HashMap<String, Integer>  uniqueWords = countService.GetCounts(data);
     }
    
 }
