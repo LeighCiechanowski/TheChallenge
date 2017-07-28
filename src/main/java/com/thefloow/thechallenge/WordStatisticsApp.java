@@ -24,7 +24,14 @@ public class WordStatisticsApp
         String data = fileReader.readFile(parameters.get(WordStatisticsApp.SOURCE_KEY));
         
         WordCountService countService = new WordCountService();
-        HashMap<String, Integer>  uniqueWords = countService.GetCounts(data);
+        HashMap<String, Integer> wordCounts = countService.GetCounts(data);
+        
+        MongoService mongoService = new MongoService(
+                parameters.get(WordStatisticsApp.MONGO_HOST_KEY), 
+                parameters.get(WordStatisticsApp.MONGO_PORT_KEY));
+        
+        mongoService.upsertWordCount(wordCounts);
+        mongoService.close();
     }
    
 }
