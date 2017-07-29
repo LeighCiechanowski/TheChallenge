@@ -66,6 +66,7 @@ public class MongoService implements iMongoService
         return true;
     }
     
+    @Override
     public void close() 
     {
         client.close();
