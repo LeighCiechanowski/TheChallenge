@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import org.bson.Document;
 
-public class MongoService 
+public class MongoService implements iMongoService
 {
     public static final String DATABASE = "WordStats";
     public static final String WORD_COUNT_COLLECTION = "WordCount";
@@ -34,14 +34,17 @@ public class MongoService
         } 
         catch (MongoException ex) 
         {
-            Logger.getLogger(FileReaderService.class.getName()).log(Level.SEVERE, "Cannot read mongo", ex);
+            Logger.getLogger(MongoService.class.getName()).log(Level.SEVERE, "Cannot read mongo", ex);
         }
         this.client = mongoClient;
         this.database = mongoDatabase;
     }
     
-    public boolean upsertWordCount(Map<String, Integer> wordCountMap) {
-        try {
+    @Override
+    public boolean upsertWordCount(Map<String, Integer> wordCountMap) 
+    {
+        try 
+        {
             MongoCollection collection = database.getCollection(WORD_COUNT_COLLECTION);
             UpdateOptions opt = new UpdateOptions().upsert(true);
             List<UpdateOneModel> requests =
@@ -54,14 +57,17 @@ public class MongoService
                             }).collect(Collectors.toList());
 
             collection.bulkWrite(requests);
-        } catch (MongoException ex) {
-           Logger.getLogger(FileReaderService.class.getName()).log(Level.SEVERE, "Exception ocurred while upserting mongo word count", ex);
+        } 
+        catch (MongoException ex) 
+        {
+           Logger.getLogger(MongoService.class.getName()).log(Level.SEVERE, "Exception ocurred while upserting mongo word count", ex);
             return false;
         }
         return true;
     }
     
-    public void close() {
+    public void close() 
+    {
         client.close();
     }
 }

@@ -1,9 +1,8 @@
 package com.thefloow.thechallenge;
 
+import com.thefloow.thechallenge.engines.WordCountEngine;
 import com.thefloow.thechallenge.services.*;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 public class WordStatisticsApp 
 {
@@ -20,18 +19,14 @@ public class WordStatisticsApp
         ParameterService parameterService = new ParameterService();
         Map<String, String> parameters = parameterService.buildParameters(args);
         
-        FileReaderService fileReader = new FileReaderService();
-        String data = fileReader.readFile(parameters.get(WordStatisticsApp.SOURCE_KEY));
-        
-        WordCountService countService = new WordCountService();
-        HashMap<String, Integer> wordCounts = countService.GetCounts(data);
-        
         MongoService mongoService = new MongoService(
-                parameters.get(WordStatisticsApp.MONGO_HOST_KEY), 
-                parameters.get(WordStatisticsApp.MONGO_PORT_KEY));
+            parameters.get(WordStatisticsApp.MONGO_HOST_KEY), 
+            parameters.get(WordStatisticsApp.MONGO_PORT_KEY));
+         
+        WordCountService countService = new WordCountService();
         
-        mongoService.upsertWordCount(wordCounts);
-        mongoService.close();
+        WordCountEngine engine = new WordCountEngine(mongoService, countService);
+        engine.Run(parameters.get(WordStatisticsApp.SOURCE_KEY));
     }
    
 }

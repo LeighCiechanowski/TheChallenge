@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class WordCountService 
+public class WordCountService implements iWordCountService
 {
     private Set<String> GetUniqueWords(String data)
     {
@@ -18,6 +18,7 @@ public class WordCountService
         return uniqueWords;
     }
     
+    @Override
     public HashMap<String, Integer> GetCounts(String data)
     {
         HashMap<String, Integer> counts = new HashMap<>();
