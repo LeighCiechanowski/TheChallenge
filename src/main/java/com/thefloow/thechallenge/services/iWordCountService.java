@@ -1,8 +1,8 @@
 package com.thefloow.thechallenge.services;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public interface iWordCountService 
 {
-    public HashMap<String, Integer> GetCounts(String data);
+    public Map<String, Integer> GetCounts(String data);
 }
