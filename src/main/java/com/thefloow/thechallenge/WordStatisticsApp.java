@@ -42,38 +42,13 @@ public class WordStatisticsApp
             FileReaderService fileReaderService = new FileReaderService("testdata.txt");
             WordCountService countService = new WordCountService();
             WordCountEngine engine = new WordCountEngine(mongoService, countService, fileReaderService);
+            //fileReaderService.close();
             engine.Run(chunk.getStart(), chunk.getEnd());
             
             chunk.setComplete(true);
             fileMappingEngine.updateFileChunk(chunk);
             chunk = fileMappingEngine.getNextFileChunk();
         }
-        
-        
-        /*FileChunkingService test = new FileChunkingService();
-        List<FileChunk> data = test.chunkFile("test.xml");
-        
-        mongoService.putFileMap(data);
-        mongoService.close();
-        */
-        //FileChunkingService test = new FileChunkingService();
-        //test.chunkFile(SOURCE_KEY);
-        // TODO remove hardcoded args
-        /*args = new String[]{"-source","testdata.txt","-mongo", "localhost:27017"};
-        
-        System.out.println("And so it begins");
-        ParameterService parameterService = new ParameterService();
-        Map<String, String> parameters = parameterService.buildParameters(args);
-        
-        MongoService mongoService = new MongoService(
-            parameters.get(WordStatisticsApp.MONGO_HOST_KEY), 
-            parameters.get(WordStatisticsApp.MONGO_PORT_KEY));
-         
-        WordCountService countService = new WordCountService();
-        
-        WordCountEngine engine = new WordCountEngine(mongoService, countService);
-        engine.Run(parameters.get(WordStatisticsApp.SOURCE_KEY));
-*/
     }
    
 }

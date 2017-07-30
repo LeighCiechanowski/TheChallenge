@@ -71,4 +71,17 @@ public class FileReaderService
         return null;
 */
     }
+    
+    public boolean close()
+    {
+        try 
+        {
+            fileChannel.close();
+            return true;
+        } catch (IOException e) 
+        {
+            //log.warn("Error closing source file: ", e);
+            return false;
+        }
+    }
 }

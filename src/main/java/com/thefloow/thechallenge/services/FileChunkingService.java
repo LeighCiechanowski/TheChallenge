@@ -2,8 +2,20 @@ package com.thefloow.thechallenge.services;
 
 import Model.FileChunk;
 import java.io.File;
+import java.io.IOException;
+import java.nio.CharBuffer;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileChunkingService implements iFileChunkingService
 {
@@ -32,12 +44,14 @@ public class FileChunkingService implements iFileChunkingService
             long startPosition = 0l;
             long endPosition = chunkSize;
             
-            chunks.add(new FileChunk(startPosition, endPosition, false, false));
+            long breakableEndPosition = findNearestSpace(endPosition, path);
             
-            while(endPosition < fileSize)
+            chunks.add(new FileChunk(startPosition, breakableEndPosition, false, false));
+            
+            while(breakableEndPosition < fileSize)
             {
-                 startPosition = endPosition + 1;
-                 endPosition = endPosition + chunkSize;
+                 startPosition = breakableEndPosition + 1;
+                 endPosition = breakableEndPosition + chunkSize;
                  
                  if(endPosition > fileSize)
                  {
@@ -45,12 +59,37 @@ public class FileChunkingService implements iFileChunkingService
                      chunks.add(new FileChunk(startPosition, endPosition, false, false));
                      break;
                  }
-                 
-                  chunks.add(new FileChunk(startPosition, endPosition, false, false));
+                 breakableEndPosition = findNearestSpace(endPosition, path);
+                 chunks.add(new FileChunk(startPosition, breakableEndPosition, false, false));
             }
         }
        
         return chunks;
+    }
+    
+    private long findNearestSpace(long position, String file)
+    {
+        Path path = FileSystems.getDefault().getPath(file);
+        try 
+        {
+            String currentCharacter = "";
+            FileChannel fileChannel = (FileChannel)Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ));
+            MappedByteBuffer mappedByteBuffer;
+            
+            while(!" ".equals(currentCharacter))
+            {
+                mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, position, 1);
+                CharBuffer charBuffer = Charset.forName("utf-8").decode(mappedByteBuffer);
+                currentCharacter = charBuffer.toString();
+                position = position + 1;
+            }
+            return position - 1;
+        } 
+        catch (IOException ex) 
+        {
+            Logger.getLogger(FileChunkingService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return position;
     }
     
 }
