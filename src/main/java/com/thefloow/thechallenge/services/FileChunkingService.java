@@ -4,7 +4,7 @@ import Model.FileChunk;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileChunkingService 
+public class FileChunkingService implements iFileChunkingService
 {
     private final long oneMb = 1048576;
     private final long chunkSize = oneMb * 25;
@@ -14,6 +14,7 @@ public class FileChunkingService
     * @param  path the path of the file
     * @return the map of chunks
     */
+    @Override
     public List<FileChunk>  chunkFile(String path)
     {
         List<FileChunk> chunks = new ArrayList<>();

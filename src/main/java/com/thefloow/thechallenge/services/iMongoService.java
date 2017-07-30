@@ -7,6 +7,8 @@ import java.util.Map;
 public interface iMongoService 
 {
     public boolean upsertWordCount(Map<String, Integer> wordCountMap);
-    public void putFileMap(List<FileChunk> records);
+    public void insertFileMap(List<FileChunk> records);
+    public List<FileChunk> getFileMap();
+    public void updateFileChunk(FileChunk chunk);
     public void close();
 }

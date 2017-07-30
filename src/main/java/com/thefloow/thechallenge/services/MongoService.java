@@ -2,12 +2,16 @@ package com.thefloow.thechallenge.services;
 
 import Model.FileChunk;
 import com.mongodb.BasicDBObject;
+import com.mongodb.Block;
+import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.UpdateOneModel;
 import com.mongodb.client.model.UpdateOptions;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -75,25 +79,49 @@ public class MongoService implements iMongoService
     }
     
     @Override
-    public void putFileMap(List<FileChunk> records) {
+    public void insertFileMap(List<FileChunk> records) {
         MongoCollection<Document> collection = database.getCollection(CHUNKS_COLLECTION);
-        // this is a bit dodgy.... dropping the collection but will do for this challenge... I hope
-        // in this challenge implementation there will only ever be on map in the collection
-        // but going forward I might want to persist the maps of different files
-        // and keep a history
+       
         collection.drop();
         collection.deleteMany(new Document());
+        List<Document> chunks = new ArrayList<>();
+   
+        records.forEach((item) -> {
+            chunks.add(new Document()
+                    .append("start", item.getStart())
+                    .append("end", item.getEnd())
+                    .append("complete", item.getComplete())
+                    .append("processing", item.getProcessing()));
+        });
 
-        Document doc = new Document();
-        List<BasicDBObject> chunks = records.stream()
-                .map(record -> new BasicDBObject()
-                        .append("start", record.getStart())
-                        .append("end", record.getEnd())
-                        .append("complete", record.getComplete())
-                        .append("processing", record.getProcessing())
-                ).collect(Collectors.toList());
+        collection.insertMany(chunks);
+    }
+    
+    @Override
+    public List<FileChunk> getFileMap() 
+    {
+        MongoCollection<Document> collection = database.getCollection(CHUNKS_COLLECTION);
+        FindIterable<Document> iterable = collection.find();
+        List<FileChunk> records = new ArrayList<>();
 
-        doc.put("fileMap", chunks);
-        collection.insertOne(doc);
+        iterable.forEach((Block<Document>) document -> {
+           records.add(new FileChunk(document.getLong("start"),
+           document.getLong("end"),
+           document.getBoolean("complete"),
+           document.getBoolean("processing")));
+        });
+      return records;
+    }
+    
+    @Override
+    public void updateFileChunk(FileChunk chunk)
+    {
+        BasicDBObject filter = new BasicDBObject("start", chunk.getStart());
+        BasicDBObject action = new BasicDBObject("$set",
+                                        new Document().append("complete", chunk.getComplete())
+                                                      .append("processing", chunk.getProcessing()));
+     
+        MongoCollection<Document> collection = database.getCollection(CHUNKS_COLLECTION); 
+        collection.updateOne(filter, action);
     }
 }
