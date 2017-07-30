@@ -1,13 +1,14 @@
 package com.thefloow.thechallenge.services;
 
 import Model.FileChunk;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FileChunkingService implements iFileChunkingService
 {
     private final long oneMb = 1048576;
-    private final long chunkSize = oneMb * 25;
+    private final long chunkSize = 8;//oneMb * 25;
     
     /**
     * Returns an Map of all the chunked up positions in a file. 
@@ -19,7 +20,7 @@ public class FileChunkingService implements iFileChunkingService
     {
         List<FileChunk> chunks = new ArrayList<>();
         
-        long fileSize = oneMb * 1024;//new File(path).length();
+        long fileSize = new File(path).length();
         
         // If file is less 25mb don't bother chunking it
         if(fileSize < chunkSize)

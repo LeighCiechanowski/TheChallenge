@@ -14,14 +14,19 @@ public class WordCountEngine
 {
     private final iMongoService mongoService;
     private final iWordCountService wordCountService;
+    private final FileReaderService fileReaderService;
 
-    public WordCountEngine(iMongoService mongoService, iWordCountService wordCountService) {
+    public WordCountEngine(iMongoService mongoService, iWordCountService wordCountService, FileReaderService fileReaderService) {
         this.mongoService = mongoService;
         this.wordCountService = wordCountService;
+        this.fileReaderService = fileReaderService;
     }
     
-    public void Run(String path)
+    public void Run(long start, long end)
     {
+        String chunk = fileReaderService.readFile(start, end);
+        processLine(chunk);
+        /*
         try (Stream<String> lines = Files.lines(Paths.get(path), Charset.defaultCharset())) 
         {
             lines.forEach(line -> processLine(line));
@@ -34,6 +39,7 @@ public class WordCountEngine
         {
             mongoService.close();
         }
+*/
     }
     
     private void processLine(String line)

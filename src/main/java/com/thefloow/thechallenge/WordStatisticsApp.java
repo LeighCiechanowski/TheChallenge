@@ -2,6 +2,7 @@ package com.thefloow.thechallenge;
 
 import Model.FileChunk;
 import com.thefloow.thechallenge.engines.FileMappingEngine;
+import com.thefloow.thechallenge.engines.WordCountEngine;
 import com.thefloow.thechallenge.services.FileChunkingService;
 import com.thefloow.thechallenge.services.*;
 import java.util.Iterator;
@@ -37,6 +38,11 @@ public class WordStatisticsApp
             chunk.setProcessing(true);
             fileMappingEngine.updateFileChunk(chunk);
             // read chunk and update word count
+            
+            FileReaderService fileReaderService = new FileReaderService("testdata.txt");
+            WordCountService countService = new WordCountService();
+            WordCountEngine engine = new WordCountEngine(mongoService, countService, fileReaderService);
+            engine.Run(chunk.getStart(), chunk.getEnd());
             
             chunk.setComplete(true);
             fileMappingEngine.updateFileChunk(chunk);
