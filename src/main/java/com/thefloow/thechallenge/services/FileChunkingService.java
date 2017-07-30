@@ -20,7 +20,22 @@ import java.util.logging.Logger;
 public class FileChunkingService implements iFileChunkingService
 {
     private final long oneMb = 1048576;
-    private final long chunkSize = 8;//oneMb * 25;
+    private final long chunkSize = oneMb;
+    private FileChannel fileChannel;
+    private long fileSize;
+    
+    public FileChunkingService(String file) 
+    {
+        Path path = FileSystems.getDefault().getPath(file);
+        try 
+        {
+            fileChannel = (FileChannel)Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ));
+            fileSize = fileChannel.size();
+        } 
+        catch (IOException ex) {
+            Logger.getLogger(FileChunkingService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     
     /**
     * Returns an Map of all the chunked up positions in a file. 
@@ -31,8 +46,6 @@ public class FileChunkingService implements iFileChunkingService
     public List<FileChunk>  chunkFile(String path)
     {
         List<FileChunk> chunks = new ArrayList<>();
-        
-        long fileSize = new File(path).length();
         
         // If file is less 25mb don't bother chunking it
         if(fileSize < chunkSize)
@@ -69,19 +82,22 @@ public class FileChunkingService implements iFileChunkingService
     
     private long findNearestSpace(long position, String file)
     {
-        Path path = FileSystems.getDefault().getPath(file);
         try 
         {
             String currentCharacter = "";
-            FileChannel fileChannel = (FileChannel)Files.newByteChannel(path, EnumSet.of(StandardOpenOption.READ));
             MappedByteBuffer mappedByteBuffer;
             
-            while(!" ".equals(currentCharacter))
+            while((!" ".equals(currentCharacter)) && position < fileSize)
             {
                 mappedByteBuffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, position, 1);
                 CharBuffer charBuffer = Charset.forName("utf-8").decode(mappedByteBuffer);
                 currentCharacter = charBuffer.toString();
                 position = position + 1;
+            }
+            
+            if(position == fileSize)
+            {
+                return fileSize;
             }
             return position - 1;
         } 

@@ -5,6 +5,7 @@ import com.thefloow.thechallenge.engines.FileMappingEngine;
 import com.thefloow.thechallenge.engines.WordCountEngine;
 import com.thefloow.thechallenge.services.FileChunkingService;
 import com.thefloow.thechallenge.services.*;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ public class WordStatisticsApp
     
     public static void main( String[] args )
     {
+        System.out.println("Word Stats app started: " + new Date());
+
         args = new String[]{"-source","testdata.txt","-mongo", "localhost:27017"};
         ParameterService parameterService = new ParameterService();
         Map<String, String> parameters = parameterService.buildParameters(args);
@@ -26,29 +29,28 @@ public class WordStatisticsApp
             parameters.get(WordStatisticsApp.MONGO_HOST_KEY), 
             parameters.get(WordStatisticsApp.MONGO_PORT_KEY));
         
-        List<FileChunk> test = mongoService.getFileMap();
-        
-        FileChunkingService fileChunkingService = new FileChunkingService();
+        FileChunkingService fileChunkingService = new FileChunkingService(parameters.get(WordStatisticsApp.SOURCE_KEY));
   
         FileMappingEngine fileMappingEngine = new FileMappingEngine(mongoService, fileChunkingService, parameters.get(WordStatisticsApp.SOURCE_KEY));      
         FileChunk chunk = fileMappingEngine.getNextFileChunk();
+        
+        FileReaderService fileReaderService = new FileReaderService("testdata.txt");
+        WordCountService countService = new WordCountService();
+        WordCountEngine engine = new WordCountEngine(mongoService, countService, fileReaderService);
         
         while(chunk != null)
         {
             chunk.setProcessing(true);
             fileMappingEngine.updateFileChunk(chunk);
-            // read chunk and update word count
-            
-            FileReaderService fileReaderService = new FileReaderService("testdata.txt");
-            WordCountService countService = new WordCountService();
-            WordCountEngine engine = new WordCountEngine(mongoService, countService, fileReaderService);
-            //fileReaderService.close();
+          
             engine.Run(chunk.getStart(), chunk.getEnd());
             
             chunk.setComplete(true);
             fileMappingEngine.updateFileChunk(chunk);
             chunk = fileMappingEngine.getNextFileChunk();
         }
+        
+         System.out.println("Word Stats app started: " + new Date());
     }
    
 }

@@ -42,6 +42,11 @@ public class FileReaderService
         {
             end = fileSize;
         }
+        
+        /*if(end == fileSize)
+        {
+            start = start - 1;
+        }*/
 
         MappedByteBuffer mappedByteBuffer;
         try 

@@ -49,25 +49,28 @@ public class MongoService implements iMongoService
     @Override
     public boolean upsertWordCount(Map<String, Integer> wordCountMap) 
     {
-        try 
+        if(!wordCountMap.isEmpty())
         {
-            MongoCollection collection = database.getCollection(WORD_COUNT_COLLECTION);
-            UpdateOptions opt = new UpdateOptions().upsert(true);
-            List<UpdateOneModel> requests =
-                    wordCountMap.entrySet().stream()
-                            .map(entry -> {
-                                BasicDBObject filter = new BasicDBObject(COLLECTION_KEY, entry.getKey());
-                                BasicDBObject action = new BasicDBObject("$inc",
-                                        new Document().append(COLLECTION_VAUE, entry.getValue()));
-                                return new UpdateOneModel<>(filter, action, opt);
-                            }).collect(Collectors.toList());
+            try 
+            {
+                MongoCollection collection = database.getCollection(WORD_COUNT_COLLECTION);
+                UpdateOptions opt = new UpdateOptions().upsert(true);
+                List<UpdateOneModel> requests =
+                        wordCountMap.entrySet().stream()
+                                .map(entry -> {
+                                    BasicDBObject filter = new BasicDBObject(COLLECTION_KEY, entry.getKey());
+                                    BasicDBObject action = new BasicDBObject("$inc",
+                                            new Document().append(COLLECTION_VAUE, entry.getValue()));
+                                    return new UpdateOneModel<>(filter, action, opt);
+                                }).collect(Collectors.toList());
 
-            collection.bulkWrite(requests);
-        } 
-        catch (MongoException ex) 
-        {
-           Logger.getLogger(MongoService.class.getName()).log(Level.SEVERE, "Exception ocurred while upserting mongo word count", ex);
-           return false;
+                collection.bulkWrite(requests);
+            } 
+            catch (MongoException ex) 
+            {
+               Logger.getLogger(MongoService.class.getName()).log(Level.SEVERE, "Exception ocurred while upserting mongo word count", ex);
+               return false;
+            }
         }
         return true;
     }
