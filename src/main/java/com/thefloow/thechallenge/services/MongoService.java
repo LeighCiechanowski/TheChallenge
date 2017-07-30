@@ -1,5 +1,6 @@
 package com.thefloow.thechallenge.services;
 
+import Model.FileChunk;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
@@ -18,6 +19,7 @@ public class MongoService implements iMongoService
 {
     public static final String DATABASE = "WordStats";
     public static final String WORD_COUNT_COLLECTION = "WordCount";
+    public static final String CHUNKS_COLLECTION = "Chunks";
     private static final String COLLECTION_KEY = "word";
     private static final String COLLECTION_VAUE = "count";
     private final MongoClient client;
@@ -61,7 +63,7 @@ public class MongoService implements iMongoService
         catch (MongoException ex) 
         {
            Logger.getLogger(MongoService.class.getName()).log(Level.SEVERE, "Exception ocurred while upserting mongo word count", ex);
-            return false;
+           return false;
         }
         return true;
     }
@@ -70,5 +72,28 @@ public class MongoService implements iMongoService
     public void close() 
     {
         client.close();
+    }
+    
+    @Override
+    public void putFileMap(List<FileChunk> records) {
+        MongoCollection<Document> collection = database.getCollection(CHUNKS_COLLECTION);
+        // this is a bit dodgy.... dropping the collection but will do for this challenge... I hope
+        // in this challenge implementation there will only ever be on map in the collection
+        // but going forward I might want to persist the maps of different files
+        // and keep a history
+        collection.drop();
+        collection.deleteMany(new Document());
+
+        Document doc = new Document();
+        List<BasicDBObject> chunks = records.stream()
+                .map(record -> new BasicDBObject()
+                        .append("start", record.getStart())
+                        .append("end", record.getEnd())
+                        .append("complete", record.getComplete())
+                        .append("processing", record.getProcessing())
+                ).collect(Collectors.toList());
+
+        doc.put("fileMap", chunks);
+        collection.insertOne(doc);
     }
 }

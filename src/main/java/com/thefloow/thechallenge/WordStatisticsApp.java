@@ -1,7 +1,9 @@
 package com.thefloow.thechallenge;
 
-import com.thefloow.thechallenge.engines.WordCountEngine;
+import Model.FileChunk;
+import com.thefloow.thechallenge.services.FileChunkingService;
 import com.thefloow.thechallenge.services.*;
+import java.util.List;
 import java.util.Map;
 
 public class WordStatisticsApp 
@@ -12,8 +14,22 @@ public class WordStatisticsApp
     
     public static void main( String[] args )
     {
-        // TODO remove hardcoded args
         args = new String[]{"-source","testdata.txt","-mongo", "localhost:27017"};
+         ParameterService parameterService = new ParameterService();
+        Map<String, String> parameters = parameterService.buildParameters(args);
+        MongoService mongoService = new MongoService(
+            parameters.get(WordStatisticsApp.MONGO_HOST_KEY), 
+            parameters.get(WordStatisticsApp.MONGO_PORT_KEY));
+        
+        FileChunkingService test = new FileChunkingService();
+        List<FileChunk> data = test.chunkFile("test.xml");
+        
+        mongoService.putFileMap(data);
+        mongoService.close();
+        //FileChunkingService test = new FileChunkingService();
+        //test.chunkFile(SOURCE_KEY);
+        // TODO remove hardcoded args
+        /*args = new String[]{"-source","testdata.txt","-mongo", "localhost:27017"};
         
         System.out.println("And so it begins");
         ParameterService parameterService = new ParameterService();
@@ -27,6 +43,7 @@ public class WordStatisticsApp
         
         WordCountEngine engine = new WordCountEngine(mongoService, countService);
         engine.Run(parameters.get(WordStatisticsApp.SOURCE_KEY));
+*/
     }
    
 }
