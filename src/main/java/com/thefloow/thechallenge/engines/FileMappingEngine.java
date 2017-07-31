@@ -24,27 +24,17 @@ public class FileMappingEngine
     private void buildMap()
     {
         fileMap = fileChunkingService.chunkFile(filePath);
-        //mongoService.putFileMap(fileMap);
-         mongoService.insertFileMap(fileMap);
+        mongoService.insertFileMap(fileMap);
     }
-    
-    /*public List<FileChunk> getFileMap()
-    {
-        if(fileMap.isEmpty())
-        {
-            buildMap();
-        }
-        // refresh map from db to get latest state
-        this.fileMap = mongoService.getFileMap();
-        return fileMap;
-    }*/
     
     public FileChunk getNextFileChunk()
     {
         if(fileMap.isEmpty())
         {
             // If you are the first server there will be no file map in Mongo
+            System.out.println("Building file chunk map");
             buildMap();
+            System.out.println("File chunk map complete");
         }
         else
         {
