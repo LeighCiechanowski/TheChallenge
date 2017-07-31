@@ -1,4 +1,4 @@
-package Model;
+package com.thefloow.thechallenge.model;
 
 public class FileChunk {
 

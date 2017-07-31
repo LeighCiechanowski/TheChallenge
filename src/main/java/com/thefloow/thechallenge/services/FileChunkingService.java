@@ -1,7 +1,6 @@
 package com.thefloow.thechallenge.services;
 
-import Model.FileChunk;
-import java.io.File;
+import com.thefloow.thechallenge.model.FileChunk;
 import java.io.IOException;
 import java.nio.CharBuffer;
 import java.nio.MappedByteBuffer;
@@ -20,7 +19,7 @@ import java.util.logging.Logger;
 public class FileChunkingService implements iFileChunkingService
 {
     private final long oneHundredKiloBytes = 1048576;
-    private final long chunkSize = oneHundredKiloBytes;//oneMb;
+    private final long chunkSize = oneHundredKiloBytes;
     private FileChannel fileChannel;
     private long fileSize;
     
@@ -47,7 +46,7 @@ public class FileChunkingService implements iFileChunkingService
     {
         List<FileChunk> chunks = new ArrayList<>();
         
-        // If file is less 25mb don't bother chunking it
+        // If file is less chunk size don't bother chunking it
         if(fileSize < chunkSize)
         {
             chunks.add(new FileChunk(0l, fileSize, false, false));
@@ -103,7 +102,7 @@ public class FileChunkingService implements iFileChunkingService
         } 
         catch (IOException ex) 
         {
-            Logger.getLogger(FileChunkingService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FileChunkingService.class.getName()).log(Level.SEVERE, "Exception happened in find nearest space", ex);
         }
         return position;
     }

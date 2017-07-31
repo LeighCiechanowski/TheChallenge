@@ -1,6 +1,6 @@
 package com.thefloow.thechallenge;
 
-import Model.FileChunk;
+import com.thefloow.thechallenge.model.FileChunk;
 import com.thefloow.thechallenge.engines.FileMappingEngine;
 import com.thefloow.thechallenge.engines.WordCountEngine;
 import com.thefloow.thechallenge.services.FileChunkingService;

@@ -1,6 +1,6 @@
 package com.thefloow.thechallenge.services;
 
-import Model.FileChunk;
+import com.thefloow.thechallenge.model.FileChunk;
 import java.util.List;
 import java.util.Map;
 

@@ -13,12 +13,13 @@ import java.util.EnumSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FileReaderService
+public class FileReaderService implements iFileReaderService
 {
     private FileChannel fileChannel;
     private long fileSize;
 
-    public long getFileSize() {
+    public long getFileSize() 
+    {
         return fileSize;
     }
     
@@ -35,6 +36,7 @@ public class FileReaderService
         }
     }
     
+    @Override
     public String readFile(long start, long end) 
     {
         
@@ -42,11 +44,6 @@ public class FileReaderService
         {
             end = fileSize;
         }
-        
-        /*if(end == fileSize)
-        {
-            start = start - 1;
-        }*/
 
         MappedByteBuffer mappedByteBuffer;
         try 
@@ -58,35 +55,23 @@ public class FileReaderService
         } 
         catch (IOException ex) 
         {
-            Logger.getLogger(FileReaderService.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(FileReaderService.class.getName()).log(Level.SEVERE, "Failed to read file", ex);
         }
         return null;    
-       
-        
-      
-        /*try 
-        {
-            String content = new String(Files.readAllBytes(Paths.get(file)));
-            return content;
-        } 
-        catch (IOException ex) 
-        {
-            Logger.getLogger(FileReaderService.class.getName()).log(Level.SEVERE, "Cannot read file", ex);
-        }
-        return null;
-*/
     }
     
+    @Override
     public boolean close()
     {
         try 
         {
             fileChannel.close();
             return true;
-        } catch (IOException e) 
+        } 
+        catch (IOException ex) 
         {
-            //log.warn("Error closing source file: ", e);
-            return false;
+           Logger.getLogger(FileReaderService.class.getName()).log(Level.SEVERE, "Failed to close file", ex);
+           return false;
         }
     }
 }

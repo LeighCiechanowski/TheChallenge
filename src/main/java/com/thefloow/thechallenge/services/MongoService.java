@@ -1,9 +1,8 @@
 package com.thefloow.thechallenge.services;
 
-import Model.FileChunk;
+import com.thefloow.thechallenge.model.FileChunk;
 import com.mongodb.BasicDBObject;
 import com.mongodb.Block;
-import com.mongodb.DBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 import com.mongodb.client.FindIterable;

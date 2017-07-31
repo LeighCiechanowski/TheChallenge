@@ -1,6 +1,6 @@
 package com.thefloow.thechallenge.engines;
 
-import Model.FileChunk;
+import com.thefloow.thechallenge.model.FileChunk;
 import com.thefloow.thechallenge.services.iFileChunkingService;
 import com.thefloow.thechallenge.services.iMongoService;
 import java.util.ArrayList;
