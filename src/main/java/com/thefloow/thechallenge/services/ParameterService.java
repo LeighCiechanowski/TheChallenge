@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 public class ParameterService implements iParameterService
 {
+    // I have not implemented the parameter –id as my implementation would not use it
     private static final String SOURCE_PARAMETER_KEY = "-source";
     private static final String MONGO_PARAMETER_KEY = "-mongo";
     
