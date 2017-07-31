@@ -52,7 +52,7 @@ public class FileMappingEngine
             this.fileMap = mongoService.getFileMap();
         }
         
-        FileChunk chunk = this.fileMap.stream().filter(chunks -> Objects.equals(chunks.getComplete(), false)).findFirst().orElse(null);
+        FileChunk chunk = this.fileMap.stream().filter(chunks -> Objects.equals(chunks.getProcessing(), false)).findFirst().orElse(null);
 
         return chunk;
     }

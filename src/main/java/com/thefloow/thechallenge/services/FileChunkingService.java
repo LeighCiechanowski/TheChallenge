@@ -19,8 +19,8 @@ import java.util.logging.Logger;
 
 public class FileChunkingService implements iFileChunkingService
 {
-    private final long oneMb = 1048576;
-    private final long chunkSize = oneMb;
+    private final long oneHundredKiloBytes = 1048576;
+    private final long chunkSize = oneHundredKiloBytes;//oneMb;
     private FileChannel fileChannel;
     private long fileSize;
     

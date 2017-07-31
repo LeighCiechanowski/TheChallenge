@@ -6,10 +6,7 @@ import com.thefloow.thechallenge.engines.WordCountEngine;
 import com.thefloow.thechallenge.services.FileChunkingService;
 import com.thefloow.thechallenge.services.*;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class WordStatisticsApp 
 {
@@ -21,7 +18,11 @@ public class WordStatisticsApp
     {
         System.out.println("Word Stats app started: " + new Date());
 
-        args = new String[]{"-source","testdata.txt","-mongo", "localhost:27017"};
+        if(args.length == 0)
+        {
+            args = new String[]{"-source","testdata.txt","-mongo", "localhost:27017"};
+        }
+        
         ParameterService parameterService = new ParameterService();
         Map<String, String> parameters = parameterService.buildParameters(args);
         
@@ -34,13 +35,14 @@ public class WordStatisticsApp
         FileMappingEngine fileMappingEngine = new FileMappingEngine(mongoService, fileChunkingService, parameters.get(WordStatisticsApp.SOURCE_KEY));      
         FileChunk chunk = fileMappingEngine.getNextFileChunk();
         
-        FileReaderService fileReaderService = new FileReaderService("testdata.txt");
+        FileReaderService fileReaderService = new FileReaderService(parameters.get(WordStatisticsApp.SOURCE_KEY));
         WordCountService countService = new WordCountService();
         WordCountEngine engine = new WordCountEngine(mongoService, countService, fileReaderService);
         
         while(chunk != null)
         {
             chunk.setProcessing(true);
+            System.out.println("Updating filechunk " + chunk.getStart());
             fileMappingEngine.updateFileChunk(chunk);
           
             engine.Run(chunk.getStart(), chunk.getEnd());
@@ -50,7 +52,7 @@ public class WordStatisticsApp
             chunk = fileMappingEngine.getNextFileChunk();
         }
         
-         System.out.println("Word Stats app started: " + new Date());
+         System.out.println("Word Stats app finished: " + new Date());
     }
    
 }
